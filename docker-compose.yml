@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.8'
 services:
   database:
     image: postgres:latest
@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=mysuperpass
       - POSTGRES_DB=db
-      - POSTGRES_ADMIN=admin
+      - POSTGRES_USER=admin
     
     ports:
       - "5432:5432"

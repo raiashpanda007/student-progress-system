@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,103 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  email           String           @unique
+  phoneNumber     String
+  name            String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  emailRemainders EmailReminders[]
+  codeforces      Codeforces?
+}
+
+model EmailReminders {
+  id              String   @id @default(uuid())
+  userId          String
+  email           String
+  updatesCount    Int      @default(0)
+  automaticUpdate Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model Codeforces {
+  id               String            @id @default(uuid())
+  handle           String            @unique
+  userId           String            @unique
+  lastActivity     DateTime
+  currentRating    Int
+  maxRating        Int
+  user             User              @relation(fields: [userId], references: [id])
+  problemsSolved   Problems[]        @relation("HandlesSolvedProblems")
+  contestsGiven    Contests[]        @relation("HandlesContestsGiven")
+  solvedInContests SolvedInContest[] @relation("CodeforcesSolvedInContests")
+  submissions      Submissions[]
+  lastSyncedAt     DateTime
+}
+
+model Problems {
+  id                    String            @id @default(uuid())
+  name                  String
+  contestId             String?
+  index                 String?
+  tags                  String[]
+  rating                Int?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  handlesSolvedProblems Codeforces[]      @relation("HandlesSolvedProblems")
+  contestsInProblems    Contests[]        @relation("ProblemsInContests")
+  solvedInContests      SolvedInContest[] @relation("ProblemsSolvedInContests")
+  submissions           Submissions[]
+}
+
+model Submissions {
+  id             String     @id @default(uuid())
+  problemId      String
+  codeforcesId   String
+  problem        Problems   @relation(fields: [problemId], references: [id])
+  codeforces     Codeforces @relation(fields: [codeforcesId], references: [id])
+  submissionTime DateTime
+  language       String
+  verdict        String
+}
+
+model Contests {
+  id                   String            @id @default(uuid())
+  name                 String
+  type                 String
+  startTime            DateTime
+  endTime              DateTime
+  ratingBeforeContest  Int
+  ratingAfterContest   Int
+  rank                 Int?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  status               ContestStatus
+  problems             Problems[]        @relation("ProblemsInContests")
+  handlesContestsGiven Codeforces[]      @relation("HandlesContestsGiven")
+  solvedInContests     SolvedInContest[] @relation("ContestsWithSolvedProblems")
+}
+
+model SolvedInContest {
+  id           String     @id @default(uuid())
+  codeforcesId String
+  problemId    String
+  contestId    String
+  solvedAt     DateTime   @default(now())
+  codeforces   Codeforces @relation("CodeforcesSolvedInContests", fields: [codeforcesId], references: [id])
+  problem      Problems   @relation("ProblemsSolvedInContests", fields: [problemId], references: [id])
+  contest      Contests   @relation("ContestsWithSolvedProblems", fields: [contestId], references: [id])
+
+  @@unique([codeforcesId, problemId, contestId])
+}
+
+enum ContestStatus {
+  PENDING
+  RUNNING
+  FINISHED
 }
