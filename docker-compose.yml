@@ -20,6 +20,14 @@ services:
     depends_on:
       - database
     environment:
-      - DATABASE_URL=postgresql://admin:mysuperpass@localhost:5432/db
+      - DATABASE_URL=postgresql://admin:mysuperpass@database:5432/db
       - NODE_ENV=development
       - PORT=3001
+    command: >
+      sh -c "
+        cd packages/database &&
+        npx prisma generate &&
+        npx prisma migrate dev --name init --preview-feature &&
+        cd /app &&
+        pnpm dev
+      "

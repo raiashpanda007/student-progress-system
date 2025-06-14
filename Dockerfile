@@ -7,4 +7,4 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 # RUN pnpm build I am removing this cause for just development purposes I don't want to build the app
 EXPOSE 3000 3001
-CMD ["pnpm", "dev"]
+
