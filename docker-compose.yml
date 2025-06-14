@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  database:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysuperpass
+      - POSTGRES_DB=db
+      - POSTGRES_ADMIN=admin
+    
+    ports:
+      - "5432:5432"

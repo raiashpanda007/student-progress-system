@@ -1,6 +1,8 @@
 import express from 'express';
 import { config as _config } from 'dotenv';
 import cors from 'cors';
+import Prisma from '@workspace/database';
+
 _config();
 
 class App {
