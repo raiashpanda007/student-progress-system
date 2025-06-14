@@ -10,3 +10,16 @@ services:
     
     ports:
       - "5432:5432"
+  
+  web:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    depends_on:
+      - database
+    environment:
+      - DATABASE_URL=postgresql://admin:mysuperpass@localhost:5432/db
+      - NODE_ENV=development
+      - PORT=3001

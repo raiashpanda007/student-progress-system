@@ -1,0 +1,20 @@
+# ignore all node_modules, everywhere
+node_modules
+**/node_modules
+
+# pnpm store
+.pnpm-store
+
+# Next.js build output
+.next
+
+# Prisma client artifacts
+node_modules/.prisma
+
+# Turborepo cache
+.turbo
+
+# Local env, logs, git, etc.
+.env
+*.log
+.git
